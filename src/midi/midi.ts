@@ -7,17 +7,17 @@ type MidiOut = Output | null
 // proxy for WebMidi.js
 export class Midi {
 
-    private static instance: Midi    
+    private static instance: Midi
     static getInstance(): Midi {
         if (!Midi.instance) {
-            Midi.instance = new Midi()            
+            Midi.instance = new Midi()
         }
         return Midi.instance
     }
     
 
     private onEnabledCallback: EnabledCallback | null = null
-    private midiOut : MidiOut = null
+    private midiOut: MidiOut = null
     initialize = (
         onEnabledCallback: EnabledCallback,
 
@@ -25,8 +25,8 @@ export class Midi {
         this.onEnabledCallback = onEnabledCallback
 
         WebMidi.enable({ sysex: true }).then(this.onMidiEnabled).catch((err: any) => {
-                console.log(`error!: ${err}`)
-            })
+            console.log(`error!: ${err}`)
+        })
     }
 
     // callback when enabling WebMidi
@@ -38,7 +38,7 @@ export class Midi {
         }
     }
 
-    getInputs = ():Input[] => {
+    getInputs = (): Input[] => {
         return WebMidi.inputs
     }
 
@@ -65,7 +65,7 @@ export class Midi {
         this.closeInput()
 
         const input = WebMidi.inputs[index]
-        input.open()        
+        input.open()
     }
 
     closeOutput = () => {
@@ -86,14 +86,26 @@ export class Midi {
     noteOn = (ch: number, note: number, velocity: number) => {
         console.log(`note on: ch ${ch}, note${note}, velo${velocity}`)
         if (this.midiOut) {
-            this.midiOut.sendNoteOn(note, {channels: ch})
+            this.midiOut.sendNoteOn(note, { channels: ch })
         }
     }
 
     noteOff = (ch: number, note: number, velocity: number) => {
         console.log(`note off: ch ${ch}, note${note}, velo${velocity}`)
         if (this.midiOut) {
-            this.midiOut.sendNoteOff(note, {channels: ch})
+            this.midiOut.sendNoteOff(note, { channels: ch })
+        }
+    }
+
+    programChange = (number: number) => {
+        if (this.midiOut) {
+            this.midiOut.sendProgramChange(number)
+        }
+    }
+
+    sendNrpn = (ch: number, lsb: number, value: number) => {
+        if (this.midiOut) {
+            this.midiOut.sendNrpnValue([0x37, lsb], value) // todo:SAM2695 specific
         }
     }
 }

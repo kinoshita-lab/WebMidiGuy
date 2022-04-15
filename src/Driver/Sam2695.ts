@@ -4,5 +4,7 @@
  */
 export class Sam2696
 {
-    
+    setProgram = (number: number) => {
+        
+    }
 }

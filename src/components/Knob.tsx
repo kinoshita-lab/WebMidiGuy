@@ -29,8 +29,8 @@ type Props = {
 export const Knob: VFC<Props> = memo((props) => {
 
     const { x = 0, y = 0, min = 0, max = 127, props_value = 0, onChange = null, custom = null } = props;
-    const width = custom ? custom.width : 100
-    const height = custom ? custom.height : 100
+    const width = custom ? custom.width : 40
+    const height = custom ? custom.height : 40
 
     const [lastMouseY, setLastMouseY] = useState(0)
     const [value, setValue] = useState(props_value)
@@ -50,6 +50,9 @@ export const Knob: VFC<Props> = memo((props) => {
             const mouseY = e.pageY
             const delta = dragStartRef.current! - mouseY // NOTE: must use reference here, state value is not updated
             const new_value = Math.max(min, Math.min(valueRef.current! + delta, max)) // NOTE: same as above
+            if (new_value == valueRef.current) {
+                return;
+            }
             setValue(new_value)
             setLastMouseY(mouseY)
         }
@@ -114,17 +117,17 @@ export const Knob: VFC<Props> = memo((props) => {
                 return
             }
 
-            const radius = 45
+            const radius = 18
             const width = canvas.width
             const height = canvas.height
 
             // fill background
-            context.fillStyle = '#000'
+            context.fillStyle = '#fff'
             context.fillRect(0, 0, width, height)
 
             // draw circle
-            context.strokeStyle = '#fff'
-            context.fillStyle = '#fff'
+            context.strokeStyle = '#000'
+            context.fillStyle = '#000'
             context.lineWidth = 1.5
             context.beginPath()
             const centerX = width / 2
@@ -143,7 +146,7 @@ export const Knob: VFC<Props> = memo((props) => {
 
             // draw value text
             context.textAlign = 'center'
-            context.fillStyle = '#fff'
+            context.fillStyle = '#000'
             context.fillText(`${value}`, width / 2, height / 2)
         }
 
@@ -186,11 +189,11 @@ export const Knob: VFC<Props> = memo((props) => {
 
 
     return (
-        <div style={{ position: "absolute", left: x, top: y, margin: "0", padding: "0", width: 100, height: 100 }}>
+        <div style={{ position: "relative", left: x, top: y, margin: "0", padding: "0" }}>
             <canvas ref={canvas_ref}
                 width={width}
                 height={height}
-                style={{ cursor: "pointer", display: "block" }}
+                style={{ position: "relative", top: 0, left: 0, cursor: "pointer", display: "block" }}
                 onMouseDown={onMouseDown}
                 onTouchStart={onTouchStart}
 
