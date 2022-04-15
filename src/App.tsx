@@ -1,69 +1,81 @@
 import { memo, useEffect, useState, ChangeEvent } from "react";
 import { Midi } from "./midi/midi"
-
+import 'react-piano/dist/styles.css';
+const reactPiano = require('react-piano');
 const App = memo(() => {
   const [initialized] = useState(false) // dummy value  call useEffect only once
-  const [midiIn, setMidiIn] = useState<Array<string>>([])
-  // const [midiOut, setMidiOut] = useState([]) // not yet
-  const [midiMessage, setMidiMessage] = useState("")
-
-  // on component mout  
+  const [midiOut, setMidiOut] = useState<Array<string>>([])
+  // on component mount  
   useEffect(() => {
-
-    Midi.getInstance().initialize(onMidiEnabled, onNoteOn, onNoteOff, onControlChange)
+    Midi.getInstance().initialize(onMidiEnabled)
   }, [initialized])
 
   // callback when midi initialize success
   const onMidiEnabled = () => {
-    const inputs = Midi.getInstance().getInputs()
-    const newInput: Array<string> = []
-    inputs.map((input) => { newInput.push(input.name) })
-    setMidiIn(newInput)
+
+    const outputs = Midi.getInstance().getOutputs()
+    console.log(outputs)
+    const newOutput: Array<string> = []
+    outputs.map((output) => {
+      newOutput.push(output.name)
+      return output.name
+    })
+    setMidiOut(newOutput)
   }
 
-  // callback on note on
-  const onNoteOn = (channel: number, note: number, velocity: number) => {
-    const message = `NoteOn Ch ${channel + 1}, Note ${note}, Velocity ${velocity}`
-    setMidiMessage(message)
-  }
-  // callback on note off
-  const onNoteOff = (channel: number, note: number, velocity: number) => {
-    const message = `NoteOff Ch ${channel + 1}, Note ${note}, Velocity ${velocity}`
-    setMidiMessage(message)
-  }
 
-  // callback on control change
-  const onControlChange = (channel: number, controlNumber: number, value: number) => {
-    const message = `Control Change Ch ${channel + 1}, Number ${controlNumber}, Value ${value}`
-    setMidiMessage(message)
-  }
-
-  const onSelectMidiIn = (event: ChangeEvent<HTMLSelectElement>) => {
+  const onSelectMidiOut = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = Number(event.target.value)
     const midi = Midi.getInstance()
     if (value === -1) {
-      midi.closeInput()
+      midi.closeOutput()
     } else {
-      midi.openInput(Number(value))
+      midi.openOutput(Number(value))
     }
   }
 
-  const midiInList = midiIn.map((input, index) => (<option value={index} key={index}>{`${input}`}</option>))
+  const midiOutList = midiOut.map((output, index) => (<option value={index} key={index}>{`${output}`}</option>))
+
+  const firstNote = reactPiano.MidiNumbers.fromNote('c3');
+  const lastNote = reactPiano.MidiNumbers.fromNote('f5');
+  const keyboardShortcuts = reactPiano.KeyboardShortcuts.create({
+    firstNote: firstNote,
+    lastNote: lastNote,
+    keyboardConfig: reactPiano.KeyboardShortcuts.HOME_ROW,
+  });
+
+  const midi = Midi.getInstance()
 
   return (
     <>
+      <h1>
+        WEB MIDI Guy
+      </h1>
       <div>
-        {midiInList.length &&
-          <select onChange={onSelectMidiIn}>
-            <option value="-1">-- select MIDI In--</option>
-            {midiInList}
+        {midiOutList.length &&
+          <select onChange={onSelectMidiOut}>
+            <option value="-1">-- select MIDI Out--</option>
+            {midiOutList}
           </select>
         }
       </div>
-      {
-        midiMessage &&
-        <h1 >{midiMessage} </h1>
-      }
+      <div>
+        <reactPiano.Piano
+          noteRange={{ first: firstNote, last: lastNote }}
+          playNote={(midiNumber: number) => {
+            // Play a given note - see notes below
+            console.log(midiNumber)
+            midi.noteOn(1, midiNumber, 127)
+          }}
+          stopNote={(midiNumber: number) => {
+            // Stop playing a given note - see notes below
+            console.log(midiNumber)
+            midi.noteOff(1, midiNumber, 127)
+          }}
+          width={1000}
+          keyboardShortcuts={keyboardShortcuts}
+        />
+      </div>
     </>
   );
 })
