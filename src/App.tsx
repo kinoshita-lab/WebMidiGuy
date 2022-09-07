@@ -96,7 +96,7 @@ const App = memo(() => {
   return (
     <>
       <h1>
-        WEB MIDI Guy ver.202204016
+        WEB MIDI Guy ver.20220907
       </h1>
       <div>
         <div >
@@ -133,7 +133,7 @@ const App = memo(() => {
         </select>
       </div>
       <div>
-        <h2>EQ</h2>
+        <h2>EQ(NO GOOD!!)</h2>
         <div className="group">
           <div>
             <KnobWithCaption caption="Equalizer High"
