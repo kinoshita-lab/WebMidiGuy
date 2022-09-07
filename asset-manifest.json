@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/WebMidiGuy/static/css/main.c7e89784.css",
+    "main.js": "/WebMidiGuy/static/js/main.ab33cce7.js",
+    "index.html": "/WebMidiGuy/index.html",
+    "main.c7e89784.css.map": "/WebMidiGuy/static/css/main.c7e89784.css.map",
+    "main.ab33cce7.js.map": "/WebMidiGuy/static/js/main.ab33cce7.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c7e89784.css",
+    "static/js/main.ab33cce7.js"
+  ]
+}
